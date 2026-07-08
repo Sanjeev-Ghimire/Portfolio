@@ -29,6 +29,7 @@ async function getAllPoems() {
 async function addPoem(title, content, theme, mood) {
   try {
     console.log('📤 Sending poem:', { title, content, theme, mood });
+    console.log('📤 Data types:', { title: typeof title, content: typeof content, theme: typeof theme, mood: typeof mood });
     
     // Client-side validation
     if (!title || !title.trim()) {
@@ -50,6 +51,8 @@ async function addPoem(title, content, theme, mood) {
       theme: theme,
       mood: mood
     };
+
+    console.log('📤 Final JSON to send:', JSON.stringify(poemData, null, 2));
 
     const response = await fetch(API_URL, {
       method: 'POST',
@@ -75,6 +78,7 @@ async function addPoem(title, content, theme, mood) {
     return responseData;
   } catch (error) {
     console.error('❌ Error adding poem:', error);
+    console.error('❌ Full error object:', error);
     showNotification('❌ ' + error.message, 'error');
     return null;
   }
