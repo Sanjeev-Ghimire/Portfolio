@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>Poetry Diary | Sanjeev Ghimire</title>
+
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="stylesheet" href="poetry.css">
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+
+
+</head>
+
+
+
+<body>
+
+
+<div class="loader">
+
+<div></div>
+
+</div>
+
+
+
+
+<div class="background"></div>
+
+<div class="animated-gradient"></div>
+
+
+
+
+<header>
+
+<nav class="navbar">
+
+<div class="nav-container">
+
+<div class="logo">
+
+<a href="index.html">Sanjeev</a>
+
+<span class="logo-dot">•</span>
+
+</div>
+
+
+
+<ul class="nav-links">
+
+<li><a href="index.html#home">Home</a></li>
+
+<li><a href="index.html#about">About</a></li>
+
+<li><a href="index.html#skills">Skills</a></li>
+
+<li><a href="index.html#projects">Projects</a></li>
+
+<li><a href="poetry.html">Poetry Diary</a></li>
+
+<li><a href="index.html#contact">Contact</a></li>
+
+</ul>
+
+
+
+<button class="menu">
+
+☰
+
+</button>
+
+</div>
+
+</nav>
+
+</header>
+
+
+
+
+<section class="poetry-header">
+
+<h1>Poetry Diary</h1>
+
+<p>Emotions too deep for conversations, transformed into words</p>
+
+</section>
+
+
+
+
+<section class="poetry-container">
+
+<div class="poetry-content">
+
+<!-- Add Poetry Form -->
+
+<div class="add-poetry-card glass">
+
+<h2>Add New Poem</h2>
+
+<form id="poemForm">
+
+<div class="form-group">
+
+<label for="poemTitle">Title</label>
+
+<input type="text" id="poemTitle" placeholder="Give your poem a title" required>
+
+</div>
+
+
+
+<div class="form-group">
+
+<label for="poemContent">Your Poem</label>
+
+<textarea id="poemContent" placeholder="Write your poem here..." rows="8" required></textarea>
+
+</div>
+
+
+
+<div class="form-row">
+
+<div class="form-group">
+
+<label for="poemTheme">Theme</label>
+
+<select id="poemTheme" required>
+
+<option value="Love">Love</option>
+
+<option value="Pain">Pain</option>
+
+<option value="Hope">Hope</option>
+
+<option value="Nature">Nature</option>
+
+<option value="Life">Life</option>
+
+<option value="Dream">Dream</option>
+
+<option value="Other">Other</option>
+
+</select>
+
+</div>
+
+
+
+<div class="form-group">
+
+<label for="poemMood">Mood</label>
+
+<select id="poemMood" required>
+
+<option value="Melancholic">Melancholic</option>
+
+<option value="Joyful">Joyful</option>
+
+<option value="Thoughtful">Thoughtful</option>
+
+<option value="Angry">Angry</option>
+
+<option value="Peaceful">Peaceful</option>
+
+<option value="Inspired">Inspired</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+
+<button type="submit" class="btn-submit">Publish Poem</button>
+
+</form>
+
+</div>
+
+
+
+
+<!-- Poetry Gallery -->
+
+<div class="poetry-gallery">
+
+<h2>My Poetry Collection</h2>
+
+<div id="poemsList" class="poems-grid">
+
+<div class="no-poems">
+
+<p>No poems yet. Start writing your first poem! 📝</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+
+<footer>
+
+<div class="footer-container">
+
+<div class="footer-section">
+
+<h3>Sanjeev Ghimire</h3>
+
+<p>Full Stack Developer, UI/UX Designer, and Poet. I create meaningful digital experiences with clean code and thoughtful design.</p>
+
+</div>
+
+<div class="footer-section">
+
+<h4>Quick Links</h4>
+
+<ul>
+
+<li><a href="index.html#home">Home</a></li>
+
+<li><a href="index.html#about">About Me</a></li>
+
+<li><a href="index.html#skills">Tech Stack</a></li>
+
+<li><a href="index.html#projects">Projects</a></li>
+
+<li><a href="poetry.html">Poetry Diary</a></li>
+
+<li><a href="index.html#contact">Contact</a></li>
+
+</ul>
+
+</div>
+
+<div class="footer-section">
+
+<h4>Connect With Me</h4>
+
+<ul>
+
+<li><a href="https://www.linkedin.com/in/sanjeev-ghimire-np/">LinkedIn Profile</a></li>
+
+<li><a href="https://github.com/Sanjeev-Ghimire">GitHub Repository</a></li>
+
+<li><a href="mailto:sanjeevghimire47@gmail.com">Email Me</a></li>
+
+<li><a href="/resume.pdf">Download Resume</a></li>
+
+</ul>
+
+</div>
+
+</div>
+
+<div class="footer-divider"></div>
+
+<div class="footer-bottom">
+
+<p>&copy; 2026 Sanjeev Ghimire. All rights reserved.</p>
+
+<p>Crafted with <span class="gold">✨</span> Excellence & Precision</p>
+
+</div>
+
+</footer>
+
+
+
+
+<script src="script.js"></script>
+
+<script src="poetry.js"></script>
+
+
+</body>
+
+</html>
