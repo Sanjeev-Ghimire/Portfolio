@@ -14,13 +14,13 @@ if (!fs.existsSync(dataDir)) {
 
 // Initialize poems file if it doesn't exist
 if (!fs.existsSync(poemsFile)) {
-  fs.writeFileSync(poemsFile, JSON.stringify([], null, 2));
+  fs.writeFileSync(poemsFile, JSON.stringify([], null, 2), { encoding: 'utf8' });
 }
 
-// Helper functions for file operations
+// Helper functions for file operations with UTF-8 support
 function readPoems() {
   try {
-    const data = fs.readFileSync(poemsFile, 'utf8');
+    const data = fs.readFileSync(poemsFile, { encoding: 'utf8' });
     return JSON.parse(data || '[]');
   } catch (error) {
     console.error('Error reading poems file:', error);
@@ -30,7 +30,10 @@ function readPoems() {
 
 function writePoems(poems) {
   try {
-    fs.writeFileSync(poemsFile, JSON.stringify(poems, null, 2));
+    // Ensure UTF-8 encoding and proper formatting
+    const jsonString = JSON.stringify(poems, null, 2);
+    fs.writeFileSync(poemsFile, jsonString, { encoding: 'utf8' });
+    console.log('✅ Poems saved successfully with UTF-8 encoding');
     return true;
   } catch (error) {
     console.error('Error writing poems file:', error);
@@ -42,6 +45,7 @@ function writePoems(poems) {
 router.get('/api/poems', (req, res) => {
   try {
     const poems = readPoems();
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.json(poems);
   } catch (error) {
     console.error('Error fetching poems:', error);
@@ -54,27 +58,36 @@ router.post('/api/poems', (req, res) => {
   try {
     const { title, content, theme, mood } = req.body;
 
+    console.log('Received poem data:', { title, content, theme, mood });
+
     // Validation
     if (!title || !content || !theme || !mood) {
+      console.error('Missing fields:', { title, content, theme, mood });
       return res.status(400).json({ 
         error: 'Missing required fields',
         received: { title, content, theme, mood }
       });
     }
 
-    if (title.length > 200) {
-      return res.status(400).json({ error: 'Title too long (max 200 characters)' });
+    if (title.length > 500) {
+      return res.status(400).json({ error: 'Title too long (max 500 characters)' });
     }
 
-    // Create new poem object
+    if (content.length > 10000) {
+      return res.status(400).json({ error: 'Content too long (max 10000 characters)' });
+    }
+
+    // Create new poem object with UTF-8 support
     const newPoem = {
       _id: Date.now().toString(),
-      title: title.trim(),
-      content: content.trim(),
-      theme: theme,
-      mood: mood,
+      title: String(title).trim(),
+      content: String(content).trim(),
+      theme: String(theme),
+      mood: String(mood),
       createdAt: new Date().toISOString()
     };
+
+    console.log('Creating poem:', newPoem);
 
     // Read existing poems
     const poems = readPoems();
@@ -82,9 +95,10 @@ router.post('/api/poems', (req, res) => {
     // Add new poem to beginning
     poems.unshift(newPoem);
 
-    // Write back to file
+    // Write back to file with UTF-8 encoding
     if (writePoems(poems)) {
-      console.log('✅ Poem saved:', newPoem);
+      console.log('✅ Poem saved successfully:', newPoem._id);
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.status(201).json(newPoem);
     } else {
       res.status(500).json({ error: 'Failed to save poem' });
@@ -111,7 +125,7 @@ router.delete('/api/poems/:id', (req, res) => {
       return res.status(404).json({ error: 'Poem not found' });
     }
 
-    // Write updated poems
+    // Write updated poems with UTF-8 encoding
     if (writePoems(poems)) {
       console.log('✅ Poem deleted:', id);
       res.json({ message: 'Poem deleted successfully' });

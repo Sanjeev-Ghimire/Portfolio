@@ -6,13 +6,20 @@ const path = require("path");
 
 const app = express();
 
-// Middleware
+// Middleware - Set UTF-8 encoding
+app.use(express.json({ charset: 'utf-8' }));
+app.use(express.urlencoded({ extended: true, charset: 'utf-8' }));
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // Serve static files
 app.use(express.static(path.join(__dirname, "public")));
+
+// Set UTF-8 headers for all responses
+app.use((req, res, next) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Accept-Charset', 'utf-8');
+  next();
+});
 
 // Routes
 app.use("/", require("./routes/poems"));
@@ -35,4 +42,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Portfolio running on port ${PORT}`);
   console.log(`📝 Poetry API available at http://localhost:${PORT}/api/poems`);
+  console.log(`✨ Supports Unicode - Devanagari, Hindi, Nepali, and other scripts`);
 });
