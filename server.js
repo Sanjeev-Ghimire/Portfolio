@@ -1,56 +1,45 @@
 require("dotenv").config();
 
 const express = require("express");
-
 const mongoose = require("mongoose");
-
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
 
-// middleware
-
+// Middleware
 app.use(cors());
-
 app.use(express.json());
 
-// connect frontend
+// Serve static files
+app.use(express.static(path.join(__dirname, "public")));
 
-app.use(express.static("public"));
+// MongoDB (only connect if MONGO_URL exists)
+if (process.env.MONGO_URL) {
+  mongoose
+    .connect(process.env.MONGO_URL)
+    .then(() => {
+      console.log("✅ MongoDB Connected");
+    })
+    .catch((error) => {
+      console.log("MongoDB Error:", error.message);
+    });
+} else {
+  console.log("⚠️ MONGO_URL not found. Skipping MongoDB connection.");
+}
 
-// MongoDB connection
+// Contact API
+app.use("/contact", require("./routes/contact"));
 
-mongoose
-  .connect(process.env.MONGO_URL)
-
-  .then(() => {
-    console.log("✅ MongoDB Connected");
-  })
-
-  .catch((error) => {
-    console.log("MongoDB Error:", error.message);
-  });
-
-// contact API
-
-app.use(
-  "/contact",
-
-  require("./routes/contact"),
-);
-
-// home page
-
+// Home page
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/public/index.html");
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// server start
+// Port
+const PORT = process.env.PORT || 3000;
 
-app.listen(
-  process.env.PORT,
-
-  () => {
-    console.log(`🚀 Portfolio running on http://localhost:${process.env.PORT}`);
-  },
-);
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Portfolio running on port ${PORT}`);
+});
