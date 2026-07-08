@@ -7,10 +7,6 @@ const path = require('path');
 const poemsFile = path.join(__dirname, '../data/poems.json');
 const dataDir = path.join(__dirname, '../data');
 
-// Valid themes and moods
-const VALID_THEMES = ['Love', 'Pain', 'Hope', 'Nature', 'Life', 'Dream', 'Other'];
-const VALID_MOODS = ['Melancholic', 'Joyful', 'Thoughtful', 'Angry', 'Peaceful', 'Inspired'];
-
 // Ensure data directory exists
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
@@ -46,7 +42,7 @@ function writePoems(poems) {
 }
 
 // Get all poems
-router.get('/api/poems', (req, res) => {
+router.get('/poems', (req, res) => {
   try {
     const poems = readPoems();
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -58,56 +54,53 @@ router.get('/api/poems', (req, res) => {
 });
 
 // Create new poem
-router.post('/api/poems', (req, res) => {
+router.post('/poems', (req, res) => {
   try {
     let { title, content, theme, mood } = req.body;
 
-    console.log('📥 Received poem data:', { title, content, theme, mood });
+    console.log('📥 Raw received data:', { 
+      title: typeof title, 
+      content: typeof content, 
+      theme: typeof theme, 
+      mood: typeof mood 
+    });
+    console.log('📥 Received values:', { title, content, theme, mood });
 
-    // Trim and validate fields
+    // Convert to strings and trim
     title = String(title || '').trim();
     content = String(content || '').trim();
     theme = String(theme || '').trim();
     mood = String(mood || '').trim();
 
-    // Validation checks
-    const errors = [];
+    console.log('📥 After processing:', { title, content, theme, mood });
 
+    // Simple validation - just check if empty
     if (!title) {
-      errors.push('Title is required');
-    } else if (title.length > 500) {
-      errors.push('Title too long (max 500 characters)');
+      return res.status(400).json({ error: 'Title is required' });
     }
 
     if (!content) {
-      errors.push('Content is required');
-    } else if (content.length > 10000) {
-      errors.push('Content too long (max 10000 characters)');
+      return res.status(400).json({ error: 'Content is required' });
     }
 
     if (!theme) {
-      errors.push('Theme is required');
-    } else if (!VALID_THEMES.includes(theme)) {
-      errors.push(`Invalid theme. Must be one of: ${VALID_THEMES.join(', ')}`);
+      return res.status(400).json({ error: 'Theme is required' });
     }
 
     if (!mood) {
-      errors.push('Mood is required');
-    } else if (!VALID_MOODS.includes(mood)) {
-      errors.push(`Invalid mood. Must be one of: ${VALID_MOODS.join(', ')}`);
+      return res.status(400).json({ error: 'Mood is required' });
     }
 
-    // If there are validation errors, return them
-    if (errors.length > 0) {
-      console.error('❌ Validation errors:', errors);
-      return res.status(400).json({ 
-        error: 'Validation failed',
-        details: errors,
-        received: { title, content, theme, mood }
-      });
+    // Check length
+    if (title.length > 500) {
+      return res.status(400).json({ error: 'Title too long (max 500 characters)' });
     }
 
-    // Create new poem object with UTF-8 support
+    if (content.length > 10000) {
+      return res.status(400).json({ error: 'Content too long (max 10000 characters)' });
+    }
+
+    // Create new poem object
     const newPoem = {
       _id: Date.now().toString(),
       title: title,
@@ -117,7 +110,7 @@ router.post('/api/poems', (req, res) => {
       createdAt: new Date().toISOString()
     };
 
-    console.log('✏️ Creating poem:', newPoem);
+    console.log('✏️ Creating poem:', JSON.stringify(newPoem, null, 2));
 
     // Read existing poems
     const poems = readPoems();
@@ -125,7 +118,7 @@ router.post('/api/poems', (req, res) => {
     // Add new poem to beginning
     poems.unshift(newPoem);
 
-    // Write back to file with UTF-8 encoding
+    // Write back to file
     if (writePoems(poems)) {
       console.log('✅ Poem saved successfully:', newPoem._id);
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -135,17 +128,20 @@ router.post('/api/poems', (req, res) => {
     }
   } catch (error) {
     console.error('❌ Error creating poem:', error);
+    console.error('Stack trace:', error.stack);
     res.status(500).json({ 
       error: 'Failed to create poem',
-      message: error.message 
+      message: error.message,
+      stack: error.stack
     });
   }
 });
 
 // Delete poem
-router.delete('/api/poems/:id', (req, res) => {
+router.delete('/poems/:id', (req, res) => {
   try {
     const { id } = req.params;
+    console.log('🗑️ Deleting poem:', id);
 
     let poems = readPoems();
     const initialLength = poems.length;
@@ -158,7 +154,7 @@ router.delete('/api/poems/:id', (req, res) => {
       return res.status(404).json({ error: 'Poem not found' });
     }
 
-    // Write updated poems with UTF-8 encoding
+    // Write updated poems
     if (writePoems(poems)) {
       console.log('✅ Poem deleted:', id);
       res.json({ message: 'Poem deleted successfully' });
