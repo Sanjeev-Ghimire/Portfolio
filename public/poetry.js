@@ -4,22 +4,28 @@
 
 const API_URL = '/api/poems';
 
-// Get all poems from database
+// Get all poems from API
 async function getAllPoems() {
   try {
     const response = await fetch(API_URL);
-    if (!response.ok) throw new Error('Failed to fetch poems');
+    if (!response.ok) {
+      console.error('Failed to fetch poems:', response.status, response.statusText);
+      throw new Error(`Failed to fetch poems: ${response.statusText}`);
+    }
     const poems = await response.json();
     return Array.isArray(poems) ? poems : [];
   } catch (error) {
     console.error('Error fetching poems:', error);
+    showNotification('⚠️ Error loading poems', 'error');
     return [];
   }
 }
 
-// Add new poem to database
+// Add new poem to API
 async function addPoem(title, content, theme, mood) {
   try {
+    console.log('Sending poem:', { title, content, theme, mood });
+    
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
@@ -33,30 +39,40 @@ async function addPoem(title, content, theme, mood) {
       })
     });
 
-    if (!response.ok) throw new Error('Failed to create poem');
-    const newPoem = await response.json();
-    console.log('Poem saved to database:', newPoem);
-    return newPoem;
+    console.log('Response status:', response.status);
+    const responseData = await response.json();
+    console.log('Response data:', responseData);
+
+    if (!response.ok) {
+      throw new Error(responseData.error || 'Failed to create poem');
+    }
+
+    console.log('✅ Poem saved to API:', responseData);
+    return responseData;
   } catch (error) {
     console.error('Error adding poem:', error);
-    alert('Error saving poem. Please try again.');
+    showNotification('❌ Error saving poem: ' + error.message, 'error');
     return null;
   }
 }
 
-// Delete poem from database
+// Delete poem from API
 async function deletePoem(id) {
   try {
     const response = await fetch(`${API_URL}/${id}`, {
       method: 'DELETE'
     });
 
-    if (!response.ok) throw new Error('Failed to delete poem');
-    console.log('Poem deleted from database');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to delete poem');
+    }
+
+    console.log('✅ Poem deleted from API');
     return true;
   } catch (error) {
     console.error('Error deleting poem:', error);
-    alert('Error deleting poem.');
+    showNotification('❌ Error deleting poem: ' + error.message, 'error');
     return false;
   }
 }
@@ -85,7 +101,9 @@ async function displayPoems() {
     poemCard.className = 'poem-card';
     poemCard.style.animationDelay = `${index * 0.1}s`;
 
-    const date = new Date(poem.createdAt).toLocaleDateString();
+    const date = poem.createdAt 
+      ? new Date(poem.createdAt).toLocaleDateString() 
+      : 'Unknown date';
 
     poemCard.innerHTML = `
       <div class="poem-header">
@@ -113,7 +131,7 @@ async function handleDeletePoem(id) {
   if (confirm('Are you sure you want to delete this poem?')) {
     if (await deletePoem(id)) {
       await displayPoems();
-      showNotification('Poem deleted successfully');
+      showNotification('✨ Poem deleted successfully');
     }
   }
 }
@@ -131,20 +149,26 @@ function escapeHtml(text) {
 }
 
 // Notification function
-function showNotification(message) {
+function showNotification(message, type = 'success') {
   const notification = document.createElement('div');
   notification.textContent = message;
+  
+  const bgColor = type === 'error' ? '#ff3b3b' : '#d4af37';
+  const textColor = type === 'error' ? '#fafafa' : '#09090b';
+  
   notification.style.cssText = `
     position: fixed;
     top: 100px;
     right: 30px;
-    background: #d4af37;
-    color: #09090b;
+    background: ${bgColor};
+    color: ${textColor};
     padding: 15px 25px;
     border-radius: 10px;
     font-weight: 600;
     z-index: 10000;
+    max-width: 400px;
     animation: slideIn 0.4s ease-out, slideOut 0.4s ease-out 2.6s forwards;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   `;
 
   const style = document.createElement('style');
@@ -184,7 +208,7 @@ function showNotification(message) {
 
 // Handle form submission
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('Poetry page loaded');
+  console.log('🎭 Poetry page loaded');
   
   // Load poems on page load
   await displayPoems();
@@ -200,33 +224,55 @@ document.addEventListener('DOMContentLoaded', async () => {
       const theme = document.getElementById('poemTheme').value;
       const mood = document.getElementById('poemMood').value;
 
-      if (title && content) {
-        const result = await addPoem(title, content, theme, mood);
+      console.log('Form submitted:', { title, content, theme, mood });
+
+      if (!title) {
+        showNotification('❌ Please enter a poem title', 'error');
+        return;
+      }
+
+      if (!content) {
+        showNotification('❌ Please enter poem content', 'error');
+        return;
+      }
+
+      if (!theme) {
+        showNotification('❌ Please select a theme', 'error');
+        return;
+      }
+
+      if (!mood) {
+        showNotification('❌ Please select a mood', 'error');
+        return;
+      }
+
+      const result = await addPoem(title, content, theme, mood);
+      
+      if (result) {
+        poemForm.reset();
         
-        if (result) {
-          poemForm.reset();
-          
-          // Refresh display
+        // Refresh display after a small delay
+        setTimeout(async () => {
           await displayPoems();
           showNotification('✨ Poem published successfully!');
+        }, 200);
 
-          // Scroll to poems
-          setTimeout(() => {
-            const poetryGallery = document.querySelector('.poetry-gallery');
-            if (poetryGallery) {
-              poetryGallery.scrollIntoView({ behavior: 'smooth' });
-            }
-          }, 500);
-        }
-      } else {
-        alert('Please fill in all fields.');
+        // Scroll to poems
+        setTimeout(() => {
+          const poetryGallery = document.querySelector('.poetry-gallery');
+          if (poetryGallery) {
+            poetryGallery.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 500);
       }
     });
+  } else {
+    console.warn('Poem form not found');
   }
 });
 
 // Refresh poems periodically (every 30 seconds)
 setInterval(async () => {
-  console.log('Refreshing poems...');
+  console.log('🔄 Auto-refreshing poems...');
   await displayPoems();
 }, 30000);
