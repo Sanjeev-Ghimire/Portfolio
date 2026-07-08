@@ -1,31 +1,40 @@
 const router = require("express").Router();
+const { Resend } = require("resend");
 
-const Message = require("../models/Message");
-
-// receive contact form messages
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 router.post("/", async (req, res) => {
   try {
-    const newMessage = new Message({
-      name: req.body.name,
+    const { name, email, message } = req.body;
 
-      email: req.body.email,
+    await resend.emails.send({
+      from: process.env.FROM_EMAIL,
+      to: process.env.TO_EMAIL,
+      subject: `New Portfolio Message from ${name}`,
+      replyTo: email,
+      html: `
+        <h2>New Contact Form Message</h2>
 
-      message: req.body.message,
+        <p><strong>Name:</strong> ${name}</p>
+
+        <p><strong>Email:</strong> ${email}</p>
+
+        <p><strong>Message:</strong></p>
+
+        <p>${message}</p>
+      `,
     });
-
-    await newMessage.save();
 
     res.json({
       success: true,
-
-      message: "Message received successfully",
+      message: "Message sent successfully.",
     });
   } catch (error) {
+    console.error(error);
+
     res.status(500).json({
       success: false,
-
-      message: error.message,
+      message: "Failed to send message.",
     });
   }
 });
