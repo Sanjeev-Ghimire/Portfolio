@@ -2,150 +2,71 @@
 // POETRY DIARY MANAGEMENT
 // =============================
 
-const STORAGE_KEY = 'sanjeev_poems_diary_v1';
+const API_URL = '/api/poems';
 
-// Check if localStorage is available
-function isLocalStorageAvailable() {
+// Get all poems from database
+async function getAllPoems() {
   try {
-    const test = '__storage_test__';
-    localStorage.setItem(test, test);
-    localStorage.removeItem(test);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-// Initialize poetry collection from localStorage
-function initializePoems() {
-  if (!isLocalStorageAvailable()) {
-    console.warn('localStorage not available');
-    return;
-  }
-
-  let existingPoems = localStorage.getItem(STORAGE_KEY);
-  
-  if (!existingPoems || existingPoems === 'undefined' || existingPoems === '[]') {
-    const defaultPoems = [
-      {
-        id: Date.now() - 100000,
-        title: "Whispers of the Soul",
-        content: "In the silence of the night,\nWhen thoughts dance like fireflies,\nI find solace in words unspoken,\nEmotions painted in midnight ink.",
-        theme: "Life",
-        mood: "Peaceful",
-        date: new Date(Date.now() - 86400000 * 7).toLocaleDateString()
-      },
-      {
-        id: Date.now() - 50000,
-        title: "Code and Dreams",
-        content: "Lines of logic, verses of hope,\nBuilding bridges between reality and imagination,\nEvery function a prayer,\nEvery line a step towards tomorrow.",
-        theme: "Dream",
-        mood: "Inspired",
-        date: new Date(Date.now() - 86400000 * 3).toLocaleDateString()
-      }
-    ];
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultPoems));
-      console.log('Default poems initialized');
-    } catch (e) {
-      console.error('Failed to save default poems:', e);
-    }
-  }
-}
-
-// Get all poems
-function getAllPoems() {
-  if (!isLocalStorageAvailable()) {
-    console.warn('localStorage not available');
-    return [];
-  }
-
-  try {
-    const poemsData = localStorage.getItem(STORAGE_KEY);
-    
-    if (!poemsData || poemsData === 'undefined') {
-      return [];
-    }
-    
-    const poems = JSON.parse(poemsData);
+    const response = await fetch(API_URL);
+    if (!response.ok) throw new Error('Failed to fetch poems');
+    const poems = await response.json();
     return Array.isArray(poems) ? poems : [];
-  } catch (e) {
-    console.error('Error reading poems from localStorage:', e);
+  } catch (error) {
+    console.error('Error fetching poems:', error);
     return [];
   }
 }
 
-// Add new poem
-function addPoem(title, content, theme, mood) {
-  if (!isLocalStorageAvailable()) {
-    alert('Storage not available. Poem could not be saved.');
-    return null;
-  }
-
+// Add new poem to database
+async function addPoem(title, content, theme, mood) {
   try {
-    const poems = getAllPoems();
-    const newPoem = {
-      id: Date.now(),
-      title: title,
-      content: content,
-      theme: theme,
-      mood: mood,
-      date: new Date().toLocaleDateString()
-    };
-    
-    // Add to beginning of array
-    poems.unshift(newPoem);
-    
-    // Save to localStorage
-    const jsonString = JSON.stringify(poems);
-    localStorage.setItem(STORAGE_KEY, jsonString);
-    
-    // Verify it was saved
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) {
-      throw new Error('Failed to verify save');
-    }
-    
-    console.log('Poem saved successfully:', newPoem);
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title,
+        content,
+        theme,
+        mood
+      })
+    });
+
+    if (!response.ok) throw new Error('Failed to create poem');
+    const newPoem = await response.json();
+    console.log('Poem saved to database:', newPoem);
     return newPoem;
-  } catch (e) {
-    console.error('Error adding poem:', e);
+  } catch (error) {
+    console.error('Error adding poem:', error);
     alert('Error saving poem. Please try again.');
     return null;
   }
 }
 
-// Delete poem
-function deletePoem(id) {
-  if (!isLocalStorageAvailable()) {
-    alert('Storage not available.');
-    return false;
-  }
-
+// Delete poem from database
+async function deletePoem(id) {
   try {
-    let poems = getAllPoems();
-    const originalLength = poems.length;
-    poems = poems.filter(poem => poem.id !== id);
-    
-    if (poems.length < originalLength) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(poems));
-      console.log('Poem deleted successfully');
-      return true;
-    }
-    return false;
-  } catch (e) {
-    console.error('Error deleting poem:', e);
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: 'DELETE'
+    });
+
+    if (!response.ok) throw new Error('Failed to delete poem');
+    console.log('Poem deleted from database');
+    return true;
+  } catch (error) {
+    console.error('Error deleting poem:', error);
     alert('Error deleting poem.');
     return false;
   }
 }
 
 // Display poems
-function displayPoems() {
+async function displayPoems() {
   const poemsList = document.getElementById('poemsList');
   if (!poemsList) return;
 
-  const poems = getAllPoems();
+  const poems = await getAllPoems();
   console.log('Displaying poems:', poems);
 
   if (poems.length === 0) {
@@ -164,6 +85,8 @@ function displayPoems() {
     poemCard.className = 'poem-card';
     poemCard.style.animationDelay = `${index * 0.1}s`;
 
+    const date = new Date(poem.createdAt).toLocaleDateString();
+
     poemCard.innerHTML = `
       <div class="poem-header">
         <h3 class="poem-title">${escapeHtml(poem.title)}</h3>
@@ -174,9 +97,9 @@ function displayPoems() {
       </div>
       <div class="poem-content">${escapeHtml(poem.content)}</div>
       <div class="poem-footer">
-        <span class="poem-date">${poem.date}</span>
+        <span class="poem-date">${date}</span>
         <div class="poem-actions">
-          <button class="btn-delete" onclick="handleDeletePoem(${poem.id})">Delete</button>
+          <button class="btn-delete" onclick="handleDeletePoem('${poem._id}')">Delete</button>
         </div>
       </div>
     `;
@@ -186,10 +109,10 @@ function displayPoems() {
 }
 
 // Handle delete poem
-function handleDeletePoem(id) {
+async function handleDeletePoem(id) {
   if (confirm('Are you sure you want to delete this poem?')) {
-    if (deletePoem(id)) {
-      displayPoems();
+    if (await deletePoem(id)) {
+      await displayPoems();
       showNotification('Poem deleted successfully');
     }
   }
@@ -260,21 +183,16 @@ function showNotification(message) {
 }
 
 // Handle form submission
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   console.log('Poetry page loaded');
   
-  // Initialize poems on page load
-  initializePoems();
-  
-  // Wait a moment to ensure initialization is complete
-  setTimeout(() => {
-    displayPoems();
-  }, 100);
+  // Load poems on page load
+  await displayPoems();
 
   // Form submission handler
   const poemForm = document.getElementById('poemForm');
   if (poemForm) {
-    poemForm.addEventListener('submit', (e) => {
+    poemForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const title = document.getElementById('poemTitle').value.trim();
@@ -283,16 +201,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const mood = document.getElementById('poemMood').value;
 
       if (title && content) {
-        const result = addPoem(title, content, theme, mood);
+        const result = await addPoem(title, content, theme, mood);
         
         if (result) {
           poemForm.reset();
           
-          // Refresh display after a small delay
-          setTimeout(() => {
-            displayPoems();
-            showNotification('✨ Poem published successfully!');
-          }, 100);
+          // Refresh display
+          await displayPoems();
+          showNotification('✨ Poem published successfully!');
 
           // Scroll to poems
           setTimeout(() => {
@@ -309,9 +225,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Debug: Log storage on page load
-window.addEventListener('load', () => {
-  console.log('Page fully loaded');
-  console.log('Current poems:', getAllPoems());
-  console.log('Storage size:', new Blob([localStorage.getItem(STORAGE_KEY) || '']).size, 'bytes');
-});
+// Refresh poems periodically (every 30 seconds)
+setInterval(async () => {
+  console.log('Refreshing poems...');
+  await displayPoems();
+}, 30000);
