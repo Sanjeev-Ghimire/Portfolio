@@ -1,0 +1,18 @@
+[
+  {
+    "_id": "1720429200000",
+    "title": "Whispers of the Soul",
+    "content": "In the silence of the night,\nWhen thoughts dance like fireflies,\nI find solace in words unspoken,\nEmotions painted in midnight ink.",
+    "theme": "Life",
+    "mood": "Peaceful",
+    "createdAt": "2026-07-01T00:00:00.000Z"
+  },
+  {
+    "_id": "1720256400000",
+    "title": "Code and Dreams",
+    "content": "Lines of logic, verses of hope,\nBuilding bridges between reality and imagination,\nEvery function a prayer,\nEvery line a step towards tomorrow.",
+    "theme": "Dream",
+    "mood": "Inspired",
+    "createdAt": "2026-06-28T00:00:00.000Z"
+  }
+]
