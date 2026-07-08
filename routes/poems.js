@@ -3,9 +3,13 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 
-// Use file-based storage as fallback
+// Use file-based storage
 const poemsFile = path.join(__dirname, '../data/poems.json');
 const dataDir = path.join(__dirname, '../data');
+
+// Valid themes and moods
+const VALID_THEMES = ['Love', 'Pain', 'Hope', 'Nature', 'Life', 'Dream', 'Other'];
+const VALID_MOODS = ['Melancholic', 'Joyful', 'Thoughtful', 'Angry', 'Peaceful', 'Inspired'];
 
 // Ensure data directory exists
 if (!fs.existsSync(dataDir)) {
@@ -56,38 +60,64 @@ router.get('/api/poems', (req, res) => {
 // Create new poem
 router.post('/api/poems', (req, res) => {
   try {
-    const { title, content, theme, mood } = req.body;
+    let { title, content, theme, mood } = req.body;
 
-    console.log('Received poem data:', { title, content, theme, mood });
+    console.log('📥 Received poem data:', { title, content, theme, mood });
 
-    // Validation
-    if (!title || !content || !theme || !mood) {
-      console.error('Missing fields:', { title, content, theme, mood });
+    // Trim and validate fields
+    title = String(title || '').trim();
+    content = String(content || '').trim();
+    theme = String(theme || '').trim();
+    mood = String(mood || '').trim();
+
+    // Validation checks
+    const errors = [];
+
+    if (!title) {
+      errors.push('Title is required');
+    } else if (title.length > 500) {
+      errors.push('Title too long (max 500 characters)');
+    }
+
+    if (!content) {
+      errors.push('Content is required');
+    } else if (content.length > 10000) {
+      errors.push('Content too long (max 10000 characters)');
+    }
+
+    if (!theme) {
+      errors.push('Theme is required');
+    } else if (!VALID_THEMES.includes(theme)) {
+      errors.push(`Invalid theme. Must be one of: ${VALID_THEMES.join(', ')}`);
+    }
+
+    if (!mood) {
+      errors.push('Mood is required');
+    } else if (!VALID_MOODS.includes(mood)) {
+      errors.push(`Invalid mood. Must be one of: ${VALID_MOODS.join(', ')}`);
+    }
+
+    // If there are validation errors, return them
+    if (errors.length > 0) {
+      console.error('❌ Validation errors:', errors);
       return res.status(400).json({ 
-        error: 'Missing required fields',
+        error: 'Validation failed',
+        details: errors,
         received: { title, content, theme, mood }
       });
-    }
-
-    if (title.length > 500) {
-      return res.status(400).json({ error: 'Title too long (max 500 characters)' });
-    }
-
-    if (content.length > 10000) {
-      return res.status(400).json({ error: 'Content too long (max 10000 characters)' });
     }
 
     // Create new poem object with UTF-8 support
     const newPoem = {
       _id: Date.now().toString(),
-      title: String(title).trim(),
-      content: String(content).trim(),
-      theme: String(theme),
-      mood: String(mood),
+      title: title,
+      content: content,
+      theme: theme,
+      mood: mood,
       createdAt: new Date().toISOString()
     };
 
-    console.log('Creating poem:', newPoem);
+    console.log('✏️ Creating poem:', newPoem);
 
     // Read existing poems
     const poems = readPoems();
@@ -101,11 +131,14 @@ router.post('/api/poems', (req, res) => {
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.status(201).json(newPoem);
     } else {
-      res.status(500).json({ error: 'Failed to save poem' });
+      res.status(500).json({ error: 'Failed to save poem to storage' });
     }
   } catch (error) {
-    console.error('Error creating poem:', error);
-    res.status(500).json({ error: 'Failed to create poem: ' + error.message });
+    console.error('❌ Error creating poem:', error);
+    res.status(500).json({ 
+      error: 'Failed to create poem',
+      message: error.message 
+    });
   }
 });
 
@@ -133,7 +166,7 @@ router.delete('/api/poems/:id', (req, res) => {
       res.status(500).json({ error: 'Failed to delete poem' });
     }
   } catch (error) {
-    console.error('Error deleting poem:', error);
+    console.error('❌ Error deleting poem:', error);
     res.status(500).json({ error: 'Failed to delete poem: ' + error.message });
   }
 });

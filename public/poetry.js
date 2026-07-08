@@ -4,6 +4,10 @@
 
 const API_URL = '/api/poems';
 
+// Valid options matching backend
+const VALID_THEMES = ['Love', 'Pain', 'Hope', 'Nature', 'Life', 'Dream', 'Other'];
+const VALID_MOODS = ['Melancholic', 'Joyful', 'Thoughtful', 'Angry', 'Peaceful', 'Inspired'];
+
 // Get all poems from API
 async function getAllPoems() {
   try {
@@ -24,34 +28,54 @@ async function getAllPoems() {
 // Add new poem to API
 async function addPoem(title, content, theme, mood) {
   try {
-    console.log('Sending poem:', { title, content, theme, mood });
+    console.log('📤 Sending poem:', { title, content, theme, mood });
     
+    // Client-side validation
+    if (!title || !title.trim()) {
+      throw new Error('Title cannot be empty');
+    }
+    if (!content || !content.trim()) {
+      throw new Error('Content cannot be empty');
+    }
+    if (!VALID_THEMES.includes(theme)) {
+      throw new Error(`Invalid theme. Must be one of: ${VALID_THEMES.join(', ')}`);
+    }
+    if (!VALID_MOODS.includes(mood)) {
+      throw new Error(`Invalid mood. Must be one of: ${VALID_MOODS.join(', ')}`);
+    }
+
+    const poemData = {
+      title: title.trim(),
+      content: content.trim(),
+      theme: theme,
+      mood: mood
+    };
+
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
+        'Accept': 'application/json'
       },
-      body: JSON.stringify({
-        title,
-        content,
-        theme,
-        mood
-      })
+      body: JSON.stringify(poemData)
     });
 
-    console.log('Response status:', response.status);
+    console.log('📥 Response status:', response.status);
     const responseData = await response.json();
-    console.log('Response data:', responseData);
+    console.log('📥 Response data:', responseData);
 
     if (!response.ok) {
-      throw new Error(responseData.error || 'Failed to create poem');
+      const errorMsg = responseData.details 
+        ? responseData.details.join('\n')
+        : responseData.error || 'Failed to create poem';
+      throw new Error(errorMsg);
     }
 
-    console.log('✅ Poem saved to API:', responseData);
+    console.log('✅ Poem saved successfully:', responseData);
     return responseData;
   } catch (error) {
-    console.error('Error adding poem:', error);
-    showNotification('❌ Error saving poem: ' + error.message, 'error');
+    console.error('❌ Error adding poem:', error);
+    showNotification('❌ ' + error.message, 'error');
     return null;
   }
 }
@@ -68,10 +92,10 @@ async function deletePoem(id) {
       throw new Error(errorData.error || 'Failed to delete poem');
     }
 
-    console.log('✅ Poem deleted from API');
+    console.log('✅ Poem deleted successfully');
     return true;
   } catch (error) {
-    console.error('Error deleting poem:', error);
+    console.error('❌ Error deleting poem:', error);
     showNotification('❌ Error deleting poem: ' + error.message, 'error');
     return false;
   }
@@ -83,7 +107,7 @@ async function displayPoems() {
   if (!poemsList) return;
 
   const poems = await getAllPoems();
-  console.log('Displaying poems:', poems);
+  console.log('📚 Displaying poems:', poems);
 
   if (poems.length === 0) {
     poemsList.innerHTML = `
@@ -167,8 +191,10 @@ function showNotification(message, type = 'success') {
     font-weight: 600;
     z-index: 10000;
     max-width: 400px;
-    animation: slideIn 0.4s ease-out, slideOut 0.4s ease-out 2.6s forwards;
+    animation: slideIn 0.4s ease-out, slideOut 0.4s ease-out 3.6s forwards;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    white-space: pre-wrap;
+    word-wrap: break-word;
   `;
 
   const style = document.createElement('style');
@@ -203,7 +229,7 @@ function showNotification(message, type = 'success') {
 
   setTimeout(() => {
     notification.remove();
-  }, 3000);
+  }, 4000);
 }
 
 // Handle form submission
@@ -219,29 +245,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     poemForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const title = document.getElementById('poemTitle').value.trim();
-      const content = document.getElementById('poemContent').value.trim();
+      const title = document.getElementById('poemTitle').value;
+      const content = document.getElementById('poemContent').value;
       const theme = document.getElementById('poemTheme').value;
       const mood = document.getElementById('poemMood').value;
 
-      console.log('Form submitted:', { title, content, theme, mood });
+      console.log('📝 Form submitted:', { title, content, theme, mood });
 
-      if (!title) {
+      // Basic UI validation
+      if (!title.trim()) {
         showNotification('❌ Please enter a poem title', 'error');
         return;
       }
 
-      if (!content) {
+      if (!content.trim()) {
         showNotification('❌ Please enter poem content', 'error');
         return;
       }
 
-      if (!theme) {
+      if (!theme || theme === '') {
         showNotification('❌ Please select a theme', 'error');
         return;
       }
 
-      if (!mood) {
+      if (!mood || mood === '') {
         showNotification('❌ Please select a mood', 'error');
         return;
       }
@@ -267,7 +294,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   } else {
-    console.warn('Poem form not found');
+    console.warn('⚠️ Poem form not found');
   }
 });
 
