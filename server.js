@@ -1,7 +1,6 @@
 require("dotenv").config();
 
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
 
@@ -13,20 +12,6 @@ app.use(express.json());
 
 // Serve static files
 app.use(express.static(path.join(__dirname, "public")));
-
-// MongoDB (only connect if MONGO_URL exists)
-if (process.env.MONGO_URL) {
-  mongoose
-    .connect(process.env.MONGO_URL)
-    .then(() => {
-      console.log("✅ MongoDB Connected");
-    })
-    .catch((error) => {
-      console.log("MongoDB Error:", error.message);
-    });
-} else {
-  console.log("⚠️ MONGO_URL not found. Skipping MongoDB connection.");
-}
 
 // Contact API
 app.use("/contact", require("./routes/contact"));
