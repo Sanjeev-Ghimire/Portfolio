@@ -58,6 +58,8 @@ router.post('/poems', (req, res) => {
   try {
     let { title, content, theme, mood } = req.body;
 
+    console.log('\n=== 📥 INCOMING POEM DATA ===');
+    console.log('📥 Raw body:', JSON.stringify(req.body, null, 2));
     console.log('📥 Raw received data:', { 
       title: typeof title, 
       content: typeof content, 

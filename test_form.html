@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Test Form</h2>
+<form onsubmit="testSubmit(event)">
+  <input type="text" id="title" value="Test Poem" required>
+  <textarea id="content" required>My test poem content</textarea>
+  <select id="theme">
+    <option>Love</option>
+    <option>Pain</option>
+  </select>
+  <select id="mood">
+    <option>Joyful</option>
+    <option>Peaceful</option>
+  </select>
+  <button type="submit">Publish</button>
+</form>
+
+<div id="result"></div>
+
+<script>
+async function testSubmit(e) {
+  e.preventDefault();
+  
+  const data = {
+    title: document.getElementById('title').value,
+    content: document.getElementById('content').value,
+    theme: document.getElementById('theme').value,
+    mood: document.getElementById('mood').value
+  };
+  
+  console.log('📤 Sending:', data);
+  
+  try {
+    const response = await fetch('/api/poems', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+      },
+      body: JSON.stringify(data)
+    });
+    
+    console.log('Status:', response.status);
+    const json = await response.json();
+    console.log('Response:', json);
+    
+    document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(json, null, 2) + '</pre>';
+  } catch(e) {
+    console.error('Error:', e);
+    document.getElementById('result').innerHTML = '<pre>Error: ' + e.message + '</pre>';
+  }
+}
+</script>
+</body>
+</html>
