@@ -15,13 +15,15 @@
 
 <link rel="stylesheet" href="poetry.css">
 
+<link rel="stylesheet" href="book.css">
+
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
 
 
 </head>
@@ -206,7 +208,13 @@
 
 <div class="poetry-gallery">
 
+<div class="poetry-gallery-header">
+
 <h2>My Poetry Collection</h2>
+
+<button type="button" class="btn-view-book" id="viewBookBtn">📖 View Book</button>
+
+</div>
 
 <div id="poemsList" class="poems-grid">
 
@@ -225,6 +233,47 @@
 </section>
 
 
+
+
+<div class="book-modal" id="bookModal">
+
+<div class="book-modal-backdrop" id="bookModalBackdrop"></div>
+
+<button class="book-close" id="bookCloseBtn" aria-label="Close book">✕</button>
+
+<div class="book-scene">
+
+<div class="book-cover" id="bookCover">
+<div class="cover-inner page-inner">
+<div class="cover-ornament">✒️</div>
+<h1>Verses By Pablo</h1>
+<p>A Digital Poetry Book</p>
+<span class="cover-author">Sanjeev Ghimire</span>
+<button type="button" class="btn-open-book" id="openBookBtn">Open Book</button>
+</div>
+</div>
+
+<div class="book" id="bookEl">
+<div class="book-spine"></div>
+<div class="book-page book-page-left" id="bookPageLeft"></div>
+<div class="book-page book-page-right" id="bookPageRight"></div>
+<div class="book-leaf" id="bookLeaf">
+<div class="leaf-face front" id="leafFront"></div>
+<div class="leaf-face back" id="leafBack"></div>
+</div>
+</div>
+
+<button class="book-nav prev" id="bookPrevBtn" aria-label="Previous page">‹</button>
+<button class="book-nav next" id="bookNextBtn" aria-label="Next page">›</button>
+
+</div>
+
+<div class="book-footer">
+<span id="bookPageIndicator">Cover</span>
+<button type="button" class="btn-close-book" id="closeBookBtn">Close Book</button>
+</div>
+
+</div>
 
 
 <footer>
@@ -299,6 +348,8 @@
 <script src="script.js"></script>
 
 <script src="poetry.js"></script>
+
+<script src="book.js"></script>
 
 
 </body>
