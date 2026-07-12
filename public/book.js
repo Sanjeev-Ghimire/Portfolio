@@ -128,13 +128,23 @@
 
   function renderStaticSpread() {
     const idx = currentSpread - 1;
-    pageLeftEl.innerHTML = renderPageContent(
-      leftOf(idx),
-      `Page ${idx * (singlePageMode ? 1 : 2) + 1}`,
-    );
-    pageRightEl.innerHTML = singlePageMode
-      ? ""
-      : renderPageContent(rightOf(idx), `Page ${idx * 2 + 2}`);
+
+    if (singlePageMode) {
+      // Mobile: only the right page slot is visible (CSS hides the left
+      // one), so the single page's content has to be rendered there.
+      pageRightEl.innerHTML = renderPageContent(leftOf(idx), `Page ${idx + 1}`);
+      pageLeftEl.innerHTML = "";
+    } else {
+      pageLeftEl.innerHTML = renderPageContent(
+        leftOf(idx),
+        `Page ${idx * 2 + 1}`,
+      );
+      pageRightEl.innerHTML = renderPageContent(
+        rightOf(idx),
+        `Page ${idx * 2 + 2}`,
+      );
+    }
+
     updateIndicator();
     updateControls();
   }

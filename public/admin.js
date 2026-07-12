@@ -42,6 +42,9 @@
     if (typeof window.refreshBookIfOpen === "function") {
       window.refreshBookIfOpen();
     }
+    if (typeof window.displayPoems === "function") {
+      window.displayPoems();
+    }
   }
 
   function openModal(modal) {

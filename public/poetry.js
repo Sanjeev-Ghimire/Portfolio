@@ -87,6 +87,7 @@ async function addPoem(title, content, theme, mood) {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
         Accept: "application/json",
+        ...(window.PoetryAdmin ? window.PoetryAdmin.getAuthHeaders() : {}),
       },
       body: JSON.stringify(poemData),
     });
@@ -144,6 +145,7 @@ async function updatePoem(id, title, content, theme, mood) {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
         Accept: "application/json",
+        ...(window.PoetryAdmin ? window.PoetryAdmin.getAuthHeaders() : {}),
       },
       body: JSON.stringify(poemData),
     });
@@ -168,6 +170,9 @@ async function deletePoem(id) {
   try {
     const response = await fetch(`${API_URL}/${id}`, {
       method: "DELETE",
+      headers: {
+        ...(window.PoetryAdmin ? window.PoetryAdmin.getAuthHeaders() : {}),
+      },
     });
 
     if (!response.ok) {
@@ -223,7 +228,7 @@ async function displayPoems() {
       <div class="poem-content">${escapeHtml(poem.content)}</div>
       <div class="poem-footer">
         <span class="poem-date">${date}</span>
-        <div class="poem-actions">
+        <div class="poem-actions admin-only">
           <button class="btn-edit" onclick="handleEditPoem('${poem._id}')">Edit</button>
           <button class="btn-delete" onclick="handleDeletePoem('${poem._id}')">Delete</button>
         </div>
@@ -233,9 +238,14 @@ async function displayPoems() {
     poemsList.appendChild(poemCard);
   });
 }
+window.displayPoems = displayPoems;
 
 // Handle delete poem
 async function handleDeletePoem(id) {
+  if (!window.PoetryAdmin || !window.PoetryAdmin.isAdmin()) {
+    showNotification("❌ Log in as owner to delete poems", "error");
+    return;
+  }
   if (confirm("Are you sure you want to delete this poem?")) {
     if (await deletePoem(id)) {
       await displayPoems();
@@ -255,6 +265,10 @@ let currentEditId = null;
 
 // Open edit modal from the grid (poem object already on hand)
 async function handleEditPoem(id) {
+  if (!window.PoetryAdmin || !window.PoetryAdmin.isAdmin()) {
+    showNotification("❌ Log in as owner to edit poems", "error");
+    return;
+  }
   const poems = await getAllPoems();
   const poem = poems.find((p) => p._id === id);
   if (poem) {
@@ -414,6 +428,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (poemForm) {
     poemForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+
+      if (!window.PoetryAdmin || !window.PoetryAdmin.isAdmin()) {
+        showNotification("❌ Log in as owner to add poems", "error");
+        return;
+      }
 
       const title = document.getElementById("poemTitle").value;
       const content = document.getElementById("poemContent").value;
