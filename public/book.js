@@ -90,6 +90,7 @@
           <div class="page-tagrow">
             <span class="page-tag">${esc(poem.theme)}</span>
             <span class="page-tag">${esc(poem.mood)}</span>
+            <button type="button" class="page-edit-btn" onclick="window.openEditPoem('${poem._id}')">✎ Edit</button>
           </div>
           <h3 class="page-poem-title">${esc(poem.title)}</h3>
           <div class="page-poem-body">${esc(poem.content)}</div>
@@ -257,6 +258,28 @@
     modal.classList.remove("open");
     document.body.style.overflow = "";
   }
+
+  // Rebuild book content in place (e.g. after a poem was edited/deleted
+  // elsewhere) without losing the reader's spot, if the book is open.
+  async function refreshBookIfOpen() {
+    if (!modal || !modal.classList.contains("open")) return;
+    if (isAnimating) return;
+
+    const wasPastCover = currentSpread > 0;
+    const keepSpread = currentSpread;
+
+    await buildBook();
+
+    if (wasPastCover) {
+      currentSpread = Math.min(keepSpread, spreads.length) || 1;
+      renderStaticSpread();
+    } else {
+      updateIndicator();
+      updateControls();
+    }
+  }
+
+  window.refreshBookIfOpen = refreshBookIfOpen;
 
   // ---------- Wire up ----------
   document.addEventListener("DOMContentLoaded", () => {

@@ -304,6 +304,99 @@
   transform: translateY(-2px);
 }
 
+.btn-edit {
+  background: rgba(212, 175, 55, 0.1);
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-edit:hover {
+  background: rgba(212, 175, 55, 0.2);
+  border-color: #d4af37;
+  transform: translateY(-2px);
+}
+
+/* ============ EDIT POEM MODAL ============ */
+
+.edit-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+}
+
+.edit-modal.open {
+  display: flex;
+}
+
+.edit-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 5, 7, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.edit-modal-box {
+  position: relative;
+  z-index: 200005;
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 40px !important;
+  border-radius: 26px !important;
+}
+
+.edit-modal-box h2 {
+  color: #d4af37;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 26px;
+}
+
+.edit-modal-actions {
+  display: flex;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.edit-modal-actions .btn-submit {
+  margin-top: 0;
+}
+
+.btn-cancel-edit {
+  flex: 1;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cfcfcf;
+  padding: 16px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel-edit:hover {
+  border-color: #d4af37;
+  color: #d4af37;
+}
+
+@media (max-width: 600px) {
+  .edit-modal-box {
+    padding: 28px !important;
+  }
+}
+
 .no-poems {
   text-align: center;
   padding: 60px 40px;
