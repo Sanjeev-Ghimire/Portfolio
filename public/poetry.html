@@ -113,9 +113,9 @@
 
 <div class="poetry-content">
 
-<!-- Add Poetry Form -->
+<!-- Add Poetry Form (owner only) -->
 
-<div class="add-poetry-card glass">
+<div class="add-poetry-card glass admin-only">
 
 <h2>Add New Poem</h2>
 
@@ -214,7 +214,11 @@
 
 <button type="button" class="btn-view-book" id="viewBookBtn">📖 View Book</button>
 
+<button type="button" class="admin-lock" id="adminToggleBtn" title="Owner login" aria-label="Owner login">🔒</button>
+
 </div>
+
+<span class="admin-status admin-only" id="adminStatus">Owner mode — you can add and edit poems</span>
 
 <div id="poemsList" class="poems-grid">
 
@@ -233,6 +237,35 @@
 </section>
 
 
+
+
+<!-- Owner Login Modal -->
+
+<div class="edit-modal" id="adminLoginModal">
+
+<div class="edit-modal-backdrop" id="adminLoginBackdrop"></div>
+
+<div class="edit-modal-box glass">
+
+<h2>Owner Login</h2>
+
+<form id="adminLoginForm">
+
+<div class="form-group">
+<label for="adminPassword">Password</label>
+<input type="password" id="adminPassword" placeholder="Enter owner password" required autocomplete="current-password">
+</div>
+
+<div class="edit-modal-actions">
+<button type="button" class="btn-cancel-edit" id="cancelAdminLoginBtn">Cancel</button>
+<button type="submit" class="btn-submit">Unlock</button>
+</div>
+
+</form>
+
+</div>
+
+</div>
 
 
 <div class="edit-modal" id="editPoemModal">
@@ -408,6 +441,8 @@
 
 
 <script src="script.js"></script>
+
+<script src="admin.js"></script>
 
 <script src="poetry.js"></script>
 

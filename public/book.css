@@ -584,8 +584,11 @@
     width: 100%;
   }
 
-  .book-page-left,
-  .book-leaf.at-left {
+  /* The left page slot is always empty in single-page mode (see book.js),
+     so we can hide it. The left-flip *leaf* is different — it still plays
+     the backward page-turn animation — so instead of hiding it, move it
+     onto the same visible slot as the right leaf. */
+  .book-page-left {
     display: none !important;
   }
 
@@ -595,7 +598,8 @@
     border-radius: 8px;
   }
 
-  .book-leaf.at-right {
+  .book-leaf.at-right,
+  .book-leaf.at-left {
     left: 0;
     right: auto;
     border-radius: 8px;
