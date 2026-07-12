@@ -86,11 +86,16 @@
         const date = poem.createdAt
           ? new Date(poem.createdAt).toLocaleDateString()
           : "";
+        const isAdmin = window.PoetryAdmin && window.PoetryAdmin.isAdmin();
+        const ownerControls = isAdmin
+          ? `<button type="button" class="page-edit-btn" onclick="window.openEditPoem('${poem._id}')">✎ Edit</button>
+             <button type="button" class="page-delete-btn" onclick="window.handleDeletePoem('${poem._id}')">🗑 Delete</button>`
+          : "";
         return `<div class="page-inner poem-page">
           <div class="page-tagrow">
             <span class="page-tag">${esc(poem.theme)}</span>
             <span class="page-tag">${esc(poem.mood)}</span>
-            <button type="button" class="page-edit-btn" onclick="window.openEditPoem('${poem._id}')">✎ Edit</button>
+            ${ownerControls}
           </div>
           <h3 class="page-poem-title">${esc(poem.title)}</h3>
           <div class="page-poem-body">${esc(poem.content)}</div>

@@ -43,6 +43,49 @@ function writePoems(poems) {
   }
 }
 
+// ===============================
+// ADMIN AUTH
+// A single shared secret (set in .env as ADMIN_KEY) is required to
+// create, edit, or delete poems. Reading poems stays public so visitors
+// can still view the book.
+// ===============================
+const ADMIN_KEY = process.env.ADMIN_KEY || "";
+
+function requireAdmin(req, res, next) {
+  const provided = req.headers["x-admin-key"] || "";
+
+  if (!ADMIN_KEY) {
+    // No admin key configured on the server — refuse writes rather than
+    // silently letting anyone edit the diary.
+    return res
+      .status(503)
+      .json({ error: "Admin editing is not configured on this server" });
+  }
+
+  if (provided && provided === ADMIN_KEY) {
+    return next();
+  }
+
+  return res.status(401).json({ error: "Not authorized" });
+}
+
+// Check a password against the admin key without exposing the key itself.
+router.post("/admin/login", (req, res) => {
+  const { password } = req.body || {};
+
+  if (!ADMIN_KEY) {
+    return res
+      .status(503)
+      .json({ error: "Admin editing is not configured on this server" });
+  }
+
+  if (password && password === ADMIN_KEY) {
+    return res.json({ ok: true });
+  }
+
+  return res.status(401).json({ ok: false, error: "Incorrect password" });
+});
+
 // Get all poems
 router.get("/poems", (req, res) => {
   try {
@@ -56,7 +99,7 @@ router.get("/poems", (req, res) => {
 });
 
 // Create new poem
-router.post("/poems", (req, res) => {
+router.post("/poems", requireAdmin, (req, res) => {
   try {
     let { title, content, theme, mood } = req.body;
 
@@ -146,7 +189,7 @@ router.post("/poems", (req, res) => {
 });
 
 // Update existing poem
-router.put("/poems/:id", (req, res) => {
+router.put("/poems/:id", requireAdmin, (req, res) => {
   try {
     const { id } = req.params;
     let { title, content, theme, mood } = req.body;
@@ -216,7 +259,7 @@ router.put("/poems/:id", (req, res) => {
 });
 
 // Delete poem
-router.delete("/poems/:id", (req, res) => {
+router.delete("/poems/:id", requireAdmin, (req, res) => {
   try {
     const { id } = req.params;
     console.log("🗑️ Deleting poem:", id);
