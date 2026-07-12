@@ -22,14 +22,22 @@ window.addEventListener("load", () => {
 const menu = document.querySelector(".menu");
 const nav = document.querySelector("nav ul");
 
-menu.addEventListener("click", () => {
-  if (nav.style.display === "flex") {
-    nav.style.display = "none";
-  } else {
-    nav.style.display = "flex";
-    nav.style.flexDirection = "column";
-  }
-});
+if (menu && nav) {
+  menu.addEventListener("click", () => {
+    const isOpen = nav.classList.toggle("open");
+    menu.textContent = isOpen ? "✕" : "☰";
+    menu.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  });
+
+  // Close the mobile menu once a link is tapped
+  nav.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      nav.classList.remove("open");
+      menu.textContent = "☰";
+      menu.setAttribute("aria-expanded", "false");
+    });
+  });
+}
 
 // =============================
 // SMOOTH SCROLL
@@ -76,32 +84,34 @@ let roleIndex = 0;
 let charIndex = 0;
 const title = document.querySelector(".hero h2");
 
-function type() {
-  if (charIndex < roles[roleIndex].length) {
-    title.innerHTML += roles[roleIndex][charIndex];
-    charIndex++;
-    setTimeout(type, 80);
-  } else {
-    setTimeout(erase, 1500);
-  }
-}
-
-function erase() {
-  if (charIndex > 0) {
-    title.innerHTML = roles[roleIndex].substring(0, charIndex - 1);
-    charIndex--;
-    setTimeout(erase, 50);
-  } else {
-    roleIndex++;
-    if (roleIndex >= roles.length) {
-      roleIndex = 0;
+if (title) {
+  function type() {
+    if (charIndex < roles[roleIndex].length) {
+      title.innerHTML += roles[roleIndex][charIndex];
+      charIndex++;
+      setTimeout(type, 80);
+    } else {
+      setTimeout(erase, 1500);
     }
-    setTimeout(type, 300);
   }
-}
 
-title.innerHTML = "";
-type();
+  function erase() {
+    if (charIndex > 0) {
+      title.innerHTML = roles[roleIndex].substring(0, charIndex - 1);
+      charIndex--;
+      setTimeout(erase, 50);
+    } else {
+      roleIndex++;
+      if (roleIndex >= roles.length) {
+        roleIndex = 0;
+      }
+      setTimeout(type, 300);
+    }
+  }
+
+  title.innerHTML = "";
+  type();
+}
 
 // =============================
 // COUNTER ANIMATION
