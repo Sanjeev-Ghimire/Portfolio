@@ -157,16 +157,45 @@ cards.forEach((card) => {
 
 // =============================
 // PARALLAX SCROLL EFFECT
+// (desktop only — this was the #1 cause of the janky/lagging
+// photo on mobile: a synchronous, unthrottled scroll listener
+// forcing a style + paint on every single scroll event.)
 // =============================
 
 const parallaxElements = document.querySelectorAll(".profile-card");
+const parallaxQuery = window.matchMedia("(min-width: 901px)");
+let parallaxEnabled = parallaxQuery.matches;
+let parallaxTicking = false;
 
-window.addEventListener("scroll", () => {
+function updateParallax() {
+  const scrollPosition = window.scrollY;
   parallaxElements.forEach((el) => {
-    let scrollPosition = window.scrollY;
-    el.style.transform = `translateY(${scrollPosition * 0.5}px)`;
+    el.style.transform = `translate3d(0, ${scrollPosition * 0.5}px, 0)`;
   });
-});
+  parallaxTicking = false;
+}
+
+function onParallaxScroll() {
+  if (!parallaxEnabled || parallaxTicking) return;
+  parallaxTicking = true;
+  requestAnimationFrame(updateParallax);
+}
+
+function setParallaxEnabled(matches) {
+  parallaxEnabled = matches;
+  if (!parallaxEnabled) {
+    // Mobile: drop the effect entirely and clear any leftover transform
+    // so the image sits still while the page scrolls.
+    parallaxElements.forEach((el) => {
+      el.style.transform = "";
+    });
+  }
+}
+
+parallaxQuery.addEventListener("change", (e) => setParallaxEnabled(e.matches));
+setParallaxEnabled(parallaxQuery.matches);
+
+window.addEventListener("scroll", onParallaxScroll, { passive: true });
 
 // =============================
 // SECTION FADE-IN ON SCROLL

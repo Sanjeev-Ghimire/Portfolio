@@ -889,6 +889,12 @@ header.scrolled{
 
 }
 
+@media(min-width:901px){
+.profile-card{
+    will-change:transform;
+}
+}
+
 .profile-card img{
 
     width:430px;
