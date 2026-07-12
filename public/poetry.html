@@ -235,6 +235,67 @@
 
 
 
+<div class="edit-modal" id="editPoemModal">
+
+<div class="edit-modal-backdrop" id="editModalBackdrop"></div>
+
+<div class="edit-modal-box glass">
+
+<h2>Edit Poem</h2>
+
+<form id="editPoemForm">
+
+<div class="form-group">
+<label for="editTitle">Title</label>
+<input type="text" id="editTitle" required>
+</div>
+
+<div class="form-group">
+<label for="editContent">Your Poem</label>
+<textarea id="editContent" rows="8" required></textarea>
+</div>
+
+<div class="form-row">
+
+<div class="form-group">
+<label for="editTheme">Theme</label>
+<select id="editTheme" required>
+<option value="Love">Love</option>
+<option value="Pain">Pain</option>
+<option value="Hope">Hope</option>
+<option value="Nature">Nature</option>
+<option value="Life">Life</option>
+<option value="Dream">Dream</option>
+<option value="Other">Other</option>
+</select>
+</div>
+
+<div class="form-group">
+<label for="editMood">Mood</label>
+<select id="editMood" required>
+<option value="Melancholic">Melancholic</option>
+<option value="Joyful">Joyful</option>
+<option value="Thoughtful">Thoughtful</option>
+<option value="Angry">Angry</option>
+<option value="Peaceful">Peaceful</option>
+<option value="Inspired">Inspired</option>
+</select>
+</div>
+
+</div>
+
+<div class="edit-modal-actions">
+<button type="button" class="btn-cancel-edit" id="cancelEditBtn">Cancel</button>
+<button type="submit" class="btn-submit">Save Changes</button>
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+
 <div class="book-modal" id="bookModal">
 
 <div class="book-modal-backdrop" id="bookModalBackdrop"></div>
