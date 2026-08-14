@@ -576,6 +576,33 @@ View Profile →
 
 </div>
 
+<form id="contactForm" class="contact-form" novalidate>
+
+<div class="form-row">
+
+<div class="form-group">
+<label for="cf-name">Name</label>
+<input type="text" id="cf-name" name="name" placeholder="Your name" required>
+</div>
+
+<div class="form-group">
+<label for="cf-email">Email</label>
+<input type="email" id="cf-email" name="email" placeholder="you@example.com" required>
+</div>
+
+</div>
+
+<div class="form-group">
+<label for="cf-message">Message</label>
+<textarea id="cf-message" name="message" rows="5" placeholder="What's on your mind?" required></textarea>
+</div>
+
+<button type="submit" class="primary" id="cf-submit">Send Message</button>
+
+<p id="cf-status" class="cf-status" role="status" aria-live="polite"></p>
+
+</form>
+
 <div class="social-links">
 
 <a href="https://github.com/Sanjeev-Ghimire" target="_blank">

@@ -216,3 +216,56 @@ sections.forEach((section) => {
   section.style.transition = "opacity 0.6s ease";
   sectionObserver.observe(section);
 });
+// =============================
+// CONTACT FORM
+// =============================
+
+const contactForm = document.getElementById("contactForm");
+
+if (contactForm) {
+  const statusEl = document.getElementById("cf-status");
+  const submitBtn = document.getElementById("cf-submit");
+
+  contactForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("cf-name").value.trim();
+    const email = document.getElementById("cf-email").value.trim();
+    const message = document.getElementById("cf-message").value.trim();
+
+    if (!name || !email || !message) {
+      statusEl.textContent = "Please fill in all fields.";
+      statusEl.className = "cf-status error";
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending...";
+    statusEl.textContent = "";
+    statusEl.className = "cf-status";
+
+    try {
+      const res = await fetch("/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        statusEl.textContent = "Message sent — thanks for reaching out!";
+        statusEl.className = "cf-status success";
+        contactForm.reset();
+      } else {
+        throw new Error(data.message || "Failed to send message.");
+      }
+    } catch (err) {
+      statusEl.textContent = "Something went wrong. Please email me directly.";
+      statusEl.className = "cf-status error";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Send Message";
+    }
+  });
+}
