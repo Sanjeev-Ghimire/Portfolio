@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>Poetry Diary | Sanjeev Ghimire</title>
+
+
+<link rel="stylesheet" href="/style.css">
+
+<link rel="stylesheet" href="/poetry.css">
+
+<link rel="stylesheet" href="/book.css">
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+
+
+</head>
+
+
+<body>
+
+
+<div class="loader">
+
+<div></div>
+
+</div>
+
+
+
+<div class="background"></div>
+
+<div class="animated-gradient"></div>
+
+
+
+<header>
+
+<nav class="navbar">
+
+<div class="nav-container">
+
+<div class="logo">
+
+<a href="/">Sanjeev</a>
+
+<span class="logo-dot">•</span>
+
+</div>
+
+
+
+<ul class="nav-links">
+
+<li><a href="/#home">Home</a></li>
+
+<li><a href="/#about">About</a></li>
+
+<li><a href="/#skills">Skills</a></li>
+
+<li><a href="/#projects">Projects</a></li>
+
+<li><a href="/poetry">Poetry Diary</a></li>
+
+<li><a href="/#contact">Contact</a></li>
+
+</ul>
+
+
+
+<button class="menu">
+
+☰
+
+</button>
+
+</div>
+
+</nav>
+
+</header>
+
+
+
+<section class="poetry-header">
+
+<h1>Verses By Pablo</h1>
+
+<p>Emotions too deep for conversations, transformed into words</p>
+
+</section>
+
+
+
+<section class="poetry-container">
+
+<div class="poetry-content">
+
+<!-- Add Poetry Form (owner only) -->
+
+<div class="add-poetry-card glass admin-only">
+
+<h2>Add New Poem</h2>
+
+<form id="poemForm">
+
+<div class="form-group">
+
+<label for="poemTitle">Title</label>
+
+<input type="text" id="poemTitle" placeholder="Give your poem a title" required>
+
+</div>
+
+
+
+<div class="form-group">
+
+<label for="poemContent">Your Poem</label>
+
+<textarea id="poemContent" placeholder="Write your poem here..." rows="8" required></textarea>
+
+</div>
+
+
+
+<div class="form-row">
+
+<div class="form-group">
+
+<label for="poemTheme">Theme</label>
+
+<select id="poemTheme" required>
+
+<option value="Love">Love</option>
+
+<option value="Pain">Pain</option>
+
+<option value="Hope">Hope</option>
+
+<option value="Nature">Nature</option>
+
+<option value="Life">Life</option>
+
+<option value="Dream">Dream</option>
+
+<option value="Other">Other</option>
+
+</select>
+
+</div>
+
+
+
+<div class="form-group">
+
+<label for="poemMood">Mood</label>
+
+<select id="poemMood" required>
+
+<option value="Melancholic">Melancholic</option>
+
+<option value="Joyful">Joyful</option>
+
+<option value="Thoughtful">Thoughtful</option>
+
+<option value="Angry">Angry</option>
+
+<option value="Peaceful">Peaceful</option>
+
+<option value="Inspired">Inspired</option>
+
+<option value="Inspired">Heartbroken</option>
+
+
+</select>
+
+</div>
+
+</div>
+
+
+
+<button type="submit" class="btn-submit">Publish Poem</button>
+
+</form>
+
+</div>
+
+
+
+<!-- Poetry Gallery -->
+
+<div class="poetry-gallery">
+
+<div class="poetry-gallery-header">
+
+<h2>My Poetry Collection</h2>
+
+<button type="button" class="btn-view-book" id="viewBookBtn">📖 View Book</button>
+
+<button type="button" class="admin-lock" id="adminToggleBtn" title="Owner login" aria-label="Owner login">🔒</button>
+
+</div>
+
+<span class="admin-status admin-only" id="adminStatus">Owner mode — you can add and edit poems</span>
+
+<div id="poemsList" class="poems-grid">
+
+<div class="no-poems">
+
+<p>No poems yet. Start writing your first poem! 📝</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- Owner Login Modal -->
+
+<div class="edit-modal" id="adminLoginModal">
+
+<div class="edit-modal-backdrop" id="adminLoginBackdrop"></div>
+
+<div class="edit-modal-box glass">
+
+<h2>Owner Login</h2>
+
+<form id="adminLoginForm">
+
+<div class="form-group">
+<label for="adminPassword">Password</label>
+<input type="password" id="adminPassword" placeholder="Enter owner password" required autocomplete="current-password">
+</div>
+
+<div class="edit-modal-actions">
+<button type="button" class="btn-cancel-edit" id="cancelAdminLoginBtn">Cancel</button>
+<button type="submit" class="btn-submit">Unlock</button>
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+
+<div class="edit-modal" id="editPoemModal">
+
+<div class="edit-modal-backdrop" id="editModalBackdrop"></div>
+
+<div class="edit-modal-box glass">
+
+<h2>Edit Poem</h2>
+
+<form id="editPoemForm">
+
+<div class="form-group">
+<label for="editTitle">Title</label>
+<input type="text" id="editTitle" required>
+</div>
+
+<div class="form-group">
+<label for="editContent">Your Poem</label>
+<textarea id="editContent" rows="8" required></textarea>
+</div>
+
+<div class="form-row">
+
+<div class="form-group">
+<label for="editTheme">Theme</label>
+<select id="editTheme" required>
+<option value="Love">Love</option>
+<option value="Pain">Pain</option>
+<option value="Hope">Hope</option>
+<option value="Nature">Nature</option>
+<option value="Life">Life</option>
+<option value="Dream">Dream</option>
+<option value="Other">Other</option>
+</select>
+</div>
+
+<div class="form-group">
+<label for="editMood">Mood</label>
+<select id="editMood" required>
+<option value="Melancholic">Melancholic</option>
+<option value="Joyful">Joyful</option>
+<option value="Thoughtful">Thoughtful</option>
+<option value="Angry">Angry</option>
+<option value="Peaceful">Peaceful</option>
+<option value="Inspired">Inspired</option>
+<option value="Inspired">Heartbroken</option>
+</select>
+</div>
+
+</div>
+
+<div class="edit-modal-actions">
+<button type="button" class="btn-cancel-edit" id="cancelEditBtn">Cancel</button>
+<button type="submit" class="btn-submit">Save Changes</button>
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+
+<div class="book-modal" id="bookModal">
+
+<div class="book-modal-backdrop" id="bookModalBackdrop"></div>
+
+<button class="book-close" id="bookCloseBtn" aria-label="Close book">✕</button>
+
+<div class="book-scene">
+
+<div class="book-cover" id="bookCover">
+<div class="cover-inner page-inner">
+<div class="cover-ornament">✒️</div>
+<h1>अन्तर्ध्वनि</h1>
+<p>A Digital Poetry Book</p>
+<span class="cover-author">Sanjeev Ghimire</span>
+<button type="button" class="btn-open-book" id="openBookBtn">Open Book</button>
+</div>
+</div>
+
+<div class="book" id="bookEl">
+<div class="book-spine"></div>
+<div class="book-page book-page-left" id="bookPageLeft"></div>
+<div class="book-page book-page-right" id="bookPageRight"></div>
+<div class="book-leaf" id="bookLeaf">
+<div class="leaf-face front" id="leafFront"></div>
+<div class="leaf-face back" id="leafBack"></div>
+</div>
+</div>
+
+<button class="book-nav prev" id="bookPrevBtn" aria-label="Previous page">‹</button>
+<button class="book-nav next" id="bookNextBtn" aria-label="Next page">›</button>
+
+</div>
+
+<div class="book-footer">
+<span id="bookPageIndicator">Cover</span>
+<button type="button" class="btn-close-book" id="closeBookBtn">Close Book</button>
+</div>
+
+</div>
+
+
+<footer>
+
+<div class="footer-container">
+
+<div class="footer-section">
+
+<h3>Sanjeev Ghimire</h3>
+
+<p>Full Stack Developer, UI/UX Designer, and Poet. I create meaningful digital experiences with clean code and thoughtful design.</p>
+
+</div>
+
+<div class="footer-section">
+
+<h4>Quick Links</h4>
+
+<ul>
+
+<li><a href="/#home">Home</a></li>
+
+<li><a href="/#about">About Me</a></li>
+
+<li><a href="/#skills">Tech Stack</a></li>
+
+<li><a href="/#projects">Projects</a></li>
+
+<li><a href="/poetry">Poetry Diary</a></li>
+
+<li><a href="/#contact">Contact</a></li>
+
+</ul>
+
+</div>
+
+<div class="footer-section">
+
+<h4>Connect With Me</h4>
+
+<ul>
+
+<li><a href="https://www.linkedin.com/in/sanjeev-ghimire-np/">LinkedIn Profile</a></li>
+
+<li><a href="https://github.com/Sanjeev-Ghimire">GitHub Repository</a></li>
+
+<li><a href="mailto:sanjeevghimire47@gmail.com">Email Me</a></li>
+
+<li><a href="/resume.pdf">Download Resume</a></li>
+
+</ul>
+
+</div>
+
+</div>
+
+<div class="footer-divider"></div>
+
+<div class="footer-bottom">
+
+<p>&copy; 2026 Sanjeev Ghimire. All rights reserved.</p>
+
+<p>Crafted with <span class="gold">✨</span> Excellence & Precision</p>
+
+</div>
+
+</footer>
+
+
+
+<script src="/script.js"></script>
+
+<script src="/admin.js"></script>
+
+<script src="/poetry.js"></script>
+
+<script src="/book.js"></script>
+
+
+</body>
+
+</html>
